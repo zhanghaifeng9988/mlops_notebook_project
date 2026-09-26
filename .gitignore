@@ -24,7 +24,7 @@ data/
 *.keras
 *.hdf5
 *.onnx
-
+*.bin
 # Environment
 .env
 venv/
