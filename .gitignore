@@ -1,0 +1,50 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+data/
+# Jupyter Notebook
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# Data files (太大的数据文件不要上传)
+# *.csv
+*.xlsx
+*.parquet
+*.pkl
+*.h5
+*.pb
+*.keras
+*.hdf5
+*.onnx
+
+# Environment
+.env
+venv/
+env/
+ENV/
+.venv
+API.txt
+**/.venv/
+**/__pycache__/
+
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
