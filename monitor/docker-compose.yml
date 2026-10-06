@@ -1,0 +1,46 @@
+version: '3.7'
+
+volumes: 
+  grafana_data: {}  # 声明一个具名卷
+  postgres_data: {}  
+
+networks:
+  front-tier:  # 面向“前端/外部”的网络。
+  back-tier:   # 面向“后端/内部”的网络。
+
+services:
+  db:
+    image: postgres:18  # 使用官方 PostgreSQL 镜像（默认最新版）。
+    restart: always   # 容器退出/宿主机重启后自动拉起。
+    environment:
+      POSTGRES_PASSWORD: example  # 设置超级用户 postgres 的密码为 example
+    ports:         
+      - "5432:5432"             # 把宿主机 5432 映射到容器 5432，外部可以用localhost:5432 连数据库。
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    networks:
+      - back-tier               # 只挂在内网，逻辑上更安全。
+
+  adminer:                     # 数据库 管理工具
+    image: adminer
+    restart: always
+    ports:
+      - "8080:8080"
+    networks:
+      - back-tier
+      - front-tier  
+
+  grafana:                       # 可视化
+    image: grafana/grafana-enterprise:11.2.0  # Grafana 企业版镜像
+    user: "472"                  # 以 UID 472 运行（Grafana 容器内默认用户），避免挂载目录权限问题。
+    ports:
+      - "3000:3000"
+    volumes:                                                                                       # :ro 表示只读挂载，防止容器改宿主机文件。
+      - grafana_data:/var/lib/grafana
+      - /mnt/d/develop/mlops/mlops/monitor/config/grafana_datasources.yaml:/etc/grafana/provisioning/datasources/datasource.yaml:ro  # 自动配置数据源
+      - /mnt/d/develop/mlops/mlops/monitor/config/grafana_dashboards.yaml:/etc/grafana/provisioning/dashboards/dashboards.yaml:ro  #告诉 Grafana 去哪里加载仪表盘。
+      - ./dashboards:/opt/grafana/dashboards  # Grafana 启动时自动导入这些面板
+    networks:
+      - back-tier
+      - front-tier
+    restart: always

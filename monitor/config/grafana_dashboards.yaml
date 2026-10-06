@@ -1,0 +1,31 @@
+apiVersion: 1
+
+providers: # 是一个列表，可以配多个“提供者”，每个决定从哪加载一批面板。
+  # <string> an unique provider name. Required
+  - name: 'Evidently Dashboards'
+    # <int> Org id. Default to 1  面板归属的组织 ID。Grafana 默认组织就是 1，单机用基本不用改。
+    orgId: 1
+    # <string> name of the dashboard folder.  '' 空字符串 = 放在 General（根目录），不建子文件夹。
+    folder: ''
+    # <string> folder UID. will be automatically generated if not specified
+    folderUid: ''  
+    # <string> provider type. Default to 'file'   provider 类型，从本地文件加载面板。默认就是 file
+    type: file
+    # <bool> disable dashboard deletion    是否禁止删除面板。false = 允许删除
+    # 如果你把某个 JSON 文件从 ./dashboards 里删掉，Grafana 重启/扫描后也会把对应面板删掉（保持同步）
+    disableDeletion: false
+    # <int> how often Grafana will scan for changed dashboards
+    # Grafana 每隔 10 秒扫描一次 path 目录，发现 JSON 变了就自动更新面板。
+    updateIntervalSeconds: 10
+    # <bool> allow updating provisioned dashboards from the UI
+    # 是否允许在 Grafana 网页界面上直接改这些自动导入的面板。false = 不允许。
+    allowUiUpdates: false
+    options:
+      # <string, required> path to dashboard files on disk. Required when using the 'file' type
+      path: /opt/grafana/dashboards
+      # <bool> use folder names from filesystem to create folders in Grafana
+      foldersFromFilesStructure: true
+
+# 整体逻辑
+# “去 /opt/grafana/dashboards 找所有面板 JSON，每 10 秒扫一次，自动导入到组织 1 的根目录，
+# 文件删了面板也删，不允许在网页上改。”

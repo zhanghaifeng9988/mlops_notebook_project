@@ -1,0 +1,17 @@
+# config file version   Grafana 自己认的版本号
+apiVersion: 1
+
+# list of datasources to insert/update
+# available in the database
+datasources:    # 下面是一个列表，可以配多个数据源，每个以 - 开头。
+  - name: PostgreSQL   # 是你在 Grafana 界面上看到的数据源名字，随便起
+    type: postgres  # 必须是 Grafana 支持的固定值，比如 postgres、mysql、prometheus
+    access: proxy  # Grafana 后端服务器去连数据库（推荐，也是默认）。浏览器不直接碰数据库，更安全，也没有跨域问题。
+    url: db:5432
+    database: test
+    user: postgres
+    secureJsonData: # secureJsonData 是 Grafana 专门放敏感信息的地方，会加密存储，不会在界面/API 里明文回显。
+      password: 'example'
+    jsonData:      # 放的是非敏感的、数据源特有的参数。
+      sslmode: 'disable'  # 关闭 SSL。因为这是本地 Docker 内部连接，不需要 SSL，开着反而可能连不上。
+      
